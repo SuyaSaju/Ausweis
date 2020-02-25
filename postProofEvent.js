@@ -1,3 +1,5 @@
+import {BASE_URL} from './api/BaseUrl';
+
 export const postProofEvent = async ({
   sessionId,
   deviceId,
@@ -5,7 +7,7 @@ export const postProofEvent = async ({
   longitude,
 }) => {
   try {
-    const response = await fetch('http://192.168.0.7:8080/proofEvents/', {
+    const response = await fetch(BASE_URL + '/proofEvents', {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',

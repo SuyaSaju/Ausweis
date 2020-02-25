@@ -49,6 +49,7 @@ const Dashboard = () => {
 
   const onSuccess = value => {
     setPairingStarted(false);
+    console.log('Pairing Success');
     setSessionId(value.data);
   };
 
