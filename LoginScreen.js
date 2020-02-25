@@ -26,10 +26,12 @@ export const LoginScreen = () => {
             auth0
                 .webAuth
                 .authorize({scope: 'openid profile email'})
-                .then(credentials =>
+                .then(credentials => {
+                        setAccessToken(credentials.accessToken);
+                        console.log(credentials)
+                    }
                     // Successfully authenticated
                     // Store the accessToken
-                    setAccessToken(credentials.accessToken)
                 )
                 .catch(error => console.log(error));
         }}/>
