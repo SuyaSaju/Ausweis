@@ -3,6 +3,7 @@ import {Button, SafeAreaView, StyleSheet, Text} from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera as Camera} from 'react-native-camera';
 import {getSessionStatus, patchSessions} from './proofsApi';
+import {LocationUpdatesScreen} from './LocationUpdatesScreen';
 
 const Dashboard = () => {
   const [pairingStarted, setPairingStarted] = useState(false);
@@ -20,12 +21,13 @@ const Dashboard = () => {
       }
       setPairingStatus(pairingStatusFromResponse);
     };
+    if (sessionId === '') return;
     sessionStatus();
   }, [sessionId]);
 
   useEffect(() => {
     const patch = async () => {
-      if (pairingStatus.includes('Pairing')) {
+      if (sessionId != '' && pairingStatus.includes('Pairing')) {
         await patchSessions(sessionId, ['Active']);
         setPairingStatus(['Active']);
         setDisplayMessage('Session Pairing: Active');
@@ -60,12 +62,9 @@ const Dashboard = () => {
     setDisplayMessage('');
   };
 
-  const canStartScanning = () => {
-    return (
-      (pairingStatus.length === 0 || pairingStatus.includes('Closed')) &&
-      !pairingStarted
-    );
-  };
+  const canStartScanning = () =>
+    (pairingStatus.length === 0 || pairingStatus.includes('Closed')) &&
+    !pairingStarted;
 
   return (
     <SafeAreaView>
@@ -88,6 +87,8 @@ const Dashboard = () => {
       {pairingStatus.length !== 0 && !pairingStatus.includes('Closed') && (
         <Button title={'Detach pairing'} onPress={detachPairing} />
       )}
+      <Button title={'Log out'} onPress={() => {}} />
+      {sessionId !== '' && <LocationUpdatesScreen sessionId={sessionId} />}
     </SafeAreaView>
   );
 };
