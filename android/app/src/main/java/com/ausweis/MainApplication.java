@@ -2,10 +2,11 @@ package com.ausweis;
 
 import android.app.Application;
 import android.content.Context;
+
+import androidx.multidex.MultiDex;
+
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
-import com.reactnativecommunity.rnpermissions.RNPermissionsPackage;
-import org.reactnative.camera.RNCameraPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
@@ -46,6 +47,12 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this); // Remove this line if you don't want Flipper enabled
+  }
+
+  @Override
+  protected void attachBaseContext(Context base) {
+   super.attachBaseContext(base);
+   MultiDex.install(this);
   }
 
   /**

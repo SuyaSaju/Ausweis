@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import {SafeAreaView, StyleSheet, View, Text, Button} from 'react-native';
+import {SafeAreaView, StyleSheet, Text, Button} from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera as Camera} from 'react-native-camera';
 import {getPairingStatus} from './getPairingStatus';
 
-const App: () => React$Node = () => {
+const Dashboard = () => {
   const [pairingStarted, setPairingStarted] = useState(false);
   const [pairingStatus, setPairingStatus] = useState([]);
 
@@ -22,7 +22,7 @@ const App: () => React$Node = () => {
 
   return (
     <SafeAreaView>
-      {!pairingStatus.length && pairingStarted && (
+      {pairingStatus.length === 0 && !pairingStarted && (
         <Button
           title={'Pair a session'}
           onPress={() => setPairingStarted(true)}
@@ -34,10 +34,10 @@ const App: () => React$Node = () => {
           cameraProps={{flashMode: Camera.Constants.FlashMode.auto}}
         />
       )}
-      {pairingStatus.length && pairingStatus.includes('Active') && (
+      {pairingStatus.length === 0 && pairingStatus.includes('Active') && (
         <Text>Device has already paired. No further action needed</Text>
       )}
-      {pairingStatus.length &&
+      {pairingStatus.length !== 0 &&
         !(
           pairingStatus.includes('Pairing') || pairingStatus.includes('Active')
         ) && (
@@ -52,4 +52,4 @@ const App: () => React$Node = () => {
 
 const styles = StyleSheet.create({});
 
-export default App;
+export default Dashboard;
