@@ -17,6 +17,7 @@ export const postProofEvent = async ({
         geolocation: {longitude: longitude, latitude: latitude},
       },
     });
+    //console.log(response)
     return response.status;
   } catch (error) {
     console.error(error);

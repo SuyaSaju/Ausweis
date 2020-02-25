@@ -18,7 +18,7 @@ import asyncGeneratorDelegate from '@babel/runtime/helpers/esm/asyncGeneratorDel
 
 export const LocationUpdatesScreen = () => {
     const [location, setLocation] = useState(
-        'Moitoring Location: Not activated'
+        'Monitoring Location: Getting location!'
     );
     const [latitude, setLatitude] = useState("")
     const [longitude, setlongitude] = useState("")
@@ -40,18 +40,18 @@ export const LocationUpdatesScreen = () => {
                 async (position) => {
                     setLatitude(position.coords.latitude);
                     setlongitude(position.coords.longitude);
-                    setLocation("Moitoring Location: Active")
+                    setLocation("Monitoring Location: Active")
                     console.log('Value Lat', position.coords.latitude)
                 },
                 (error) => {
                     // See error code charts below.
-                    setLocation("Moitoring Location: Error, "+error.message)
+                    setLocation("Monitoring Location: Error, "+error.message)
                     console.log(error.code, error.message);
                 },
                 { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
             );
         }
-        let locationUpdateInterval = 10000; //ReadMe
+        let locationUpdateInterval = 5000; //ReadMe
         setInterval(start, locationUpdateInterval);
     }, [permissionGranted])
 
@@ -63,6 +63,8 @@ export const LocationUpdatesScreen = () => {
 
     useEffect( () => {
         const isPermissionGranted = async () => {
+            if(Platform.OS === 'ios') setPermissionGranted(true)
+            return;
             setPermissionGranted(await requestLocationPermission());
         }
         isPermissionGranted();
