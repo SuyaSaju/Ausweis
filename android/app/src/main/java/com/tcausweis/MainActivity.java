@@ -1,4 +1,4 @@
-package com.ausweis;
+package com.tcausweis;
 
 import com.facebook.react.ReactActivity;
 
