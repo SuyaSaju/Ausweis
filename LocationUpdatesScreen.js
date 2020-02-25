@@ -1,6 +1,8 @@
 import React , { useState, useEffect }from 'react';
 import Geolocation from 'react-native-geolocation-service';
 import {PermissionsAndroid} from 'react-native';
+import { getUniqueId, getManufacturer } from 'react-native-device-info';
+
 
 import {
     SafeAreaView,
@@ -25,7 +27,7 @@ export const LocationUpdatesScreen = () => {
     useEffect(() => {
         const sendProofEvents = async () => {
             console.log("Sending Lat: "+latitude)
-            const status = await postProofEvent("s3423kjnkfnas0au","dsadafasf",latitude, longitude)
+            const status = await postProofEvent("s3423kjnkfnas0au",getUniqueId(),latitude, longitude)
             console.log(status)
         };
         sendProofEvents(latitude, longitude);
@@ -49,8 +51,15 @@ export const LocationUpdatesScreen = () => {
                 { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
             );
         }
-        setInterval(start, 1000);
+        let locationUpdateInterval = 10000; //ReadMe
+        setInterval(start, locationUpdateInterval);
     }, [permissionGranted])
+
+    useEffect(() => {
+        console.log("Componenet unmount");
+
+        return () => { console.log("componentWillUnmount"); }
+    }, [] )
 
     useEffect( () => {
         const isPermissionGranted = async () => {
