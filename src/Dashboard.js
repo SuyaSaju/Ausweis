@@ -5,8 +5,9 @@ import {RNCamera as Camera} from 'react-native-camera';
 import {getSessionStatus, patchSessions} from './api/proofsApi';
 import {LocationUpdatesScreen} from './LocationUpdatesScreen';
 import {STATUS_CHECK_INTERVAL} from './api/Configuration';
+import {StackActions} from '@react-navigation/native';
 
-const Dashboard = () => {
+const Dashboard = ({navigation}) => {
   const [pairingStarted, setPairingStarted] = useState(false);
   const [pairingStatus, setPairingStatus] = useState([]);
   const [sessionId, setSessionId] = useState('');
@@ -91,7 +92,20 @@ const Dashboard = () => {
       {pairingStatus.length !== 0 && pairingStatus.includes('Active') && (
         <Button title={'Detach pairing'} onPress={detachPairing} />
       )}
-      <Button title={'Log out'} onPress={() => {}} />
+      <Button
+        title={'Log out'}
+        onPress={() => {
+          // const resetAction = NavigationActions.reset({
+          //   index: 0,
+          //   actions: [NavigationActions.navigate({routeName: 'Login'})],
+          // });
+          // navigation.dispatch(resetAction);
+          console.log('Logout');
+          const popAction = StackActions.pop(1);
+
+          navigation.dispatch(popAction);
+        }}
+      />
       {sessionId !== '' && <LocationUpdatesScreen sessionId={sessionId} />}
     </SafeAreaView>
   );
