@@ -1,31 +1,80 @@
 import React, {useState, useEffect} from 'react';
-import {SafeAreaView, StyleSheet, Text, Button} from 'react-native';
+import {Button, SafeAreaView, StyleSheet, Text} from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera as Camera} from 'react-native-camera';
-import {getPairingStatus} from './getPairingStatus';
+import {getSessionStatus, patchSessions} from './proofsApi';
 
 const Dashboard = () => {
   const [pairingStarted, setPairingStarted] = useState(false);
   const [pairingStatus, setPairingStatus] = useState([]);
+  const [sessionId, setSessionId] = useState('');
+  const [displayMessage, setDisplayMessage] = useState('');
 
   useEffect(() => {
-    if (pairingStatus && pairingStatus.includes('PAIRING')) {
-    }
-  }, [pairingStatus]);
+    const sessionStatus = async () => {
+      const pairingStatusFromResponse = await getSessionStatus(sessionId);
+      if (pairingStatusFromResponse.includes('Active')) {
+        setDisplayMessage(
+          'Device has already paired. No further action needed',
+        );
+      }
+      setPairingStatus(pairingStatusFromResponse);
+    };
+    sessionStatus();
+  }, [sessionId]);
 
-  const onSuccess = async value => {
+  useEffect(() => {
+    const patch = async () => {
+      if (pairingStatus.includes('Pairing')) {
+        await patchSessions(sessionId, ['Active']);
+        setPairingStatus(['Active']);
+        setDisplayMessage('Session Pairing: Active');
+      }
+      if (
+        pairingStatus.length !== 0 &&
+        !(
+          pairingStatus.includes('Pairing') ||
+          pairingStatus.includes('Active') ||
+          pairingStatus.includes('Closed')
+        )
+      ) {
+        setDisplayMessage(
+          'Session pairing expired or invalid. To re-initiate pairing, logout\n' +
+            '            and login once again to Topcoder through VSCode',
+        );
+      }
+    };
+    patch();
+  }, [pairingStatus, sessionId]);
+
+  const onSuccess = value => {
     setPairingStarted(false);
-    const sessionId = value.data;
-    const pairingStatusFromResponse = await getPairingStatus(sessionId);
-    setPairingStatus(pairingStatusFromResponse);
+    setSessionId(value.data);
+  };
+
+  const detachPairing = async () => {
+    await patchSessions(sessionId, ['Closed']);
+    setPairingStatus(['Closed']);
+    setSessionId('');
+    setDisplayMessage('');
+  };
+
+  const canStartScanning = () => {
+    return (
+      (pairingStatus.length === 0 || pairingStatus.includes('Closed')) &&
+      !pairingStarted
+    );
   };
 
   return (
     <SafeAreaView>
-      {pairingStatus.length === 0 && !pairingStarted && (
+      {canStartScanning() && (
         <Button
           title={'Pair a session'}
-          onPress={() => setPairingStarted(true)}
+          onPress={() => {
+            setPairingStarted(true);
+            setDisplayMessage('Pairing');
+          }}
         />
       )}
       {pairingStarted && (
@@ -34,18 +83,10 @@ const Dashboard = () => {
           cameraProps={{flashMode: Camera.Constants.FlashMode.auto}}
         />
       )}
-      {pairingStatus.length === 0 && pairingStatus.includes('Active') && (
-        <Text>Device has already paired. No further action needed</Text>
+      {displayMessage !== '' && <Text>{displayMessage}</Text>}
+      {pairingStatus.length !== 0 && !pairingStatus.includes('Closed') && (
+        <Button title={'Detach pairing'} onPress={detachPairing} />
       )}
-      {pairingStatus.length !== 0 &&
-        !(
-          pairingStatus.includes('Pairing') || pairingStatus.includes('Active')
-        ) && (
-          <Text>
-            Session pairing expired or invalid. To re-initiate pairing, logout
-            and login once again to Topcoder through VSCode
-          </Text>
-        )}
     </SafeAreaView>
   );
 };
