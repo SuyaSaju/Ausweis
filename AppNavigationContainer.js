@@ -12,8 +12,8 @@ export default function Container() {
     return (
         <NavigationContainer>
             <Stack.Navigator>
-                <Stack.Screen name="Login" component={LoginScreen} />
                 <Stack.Screen name="Location" component={LocationUpdatesScreen} />
+                <Stack.Screen name="Login" component={LoginScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
