@@ -2,7 +2,6 @@ import React , { useState, useEffect }from 'react';
 import Geolocation from 'react-native-geolocation-service';
 import {PermissionsAndroid} from 'react-native';
 
-
 import {
     SafeAreaView,
     StyleSheet,
@@ -12,38 +11,52 @@ import {
     Text,
     StatusBar,
 } from 'react-native';
+import {postProofEvent} from './postProofEvent';
+import asyncGeneratorDelegate from '@babel/runtime/helpers/esm/asyncGeneratorDelegate';
 
 export const LocationUpdatesScreen = () => {
     const [location, setLocation] = useState(
         'Moitoring Location: Not activated'
     );
+    const [latitude, setLatitude] = useState("")
+    const [longitude, setlongitude] = useState("")
+    const [permissionGranted, setPermissionGranted] = useState(false)
+
+    useEffect(() => {
+        const sendProofEvents = async () => {
+            console.log("Sending Lat: "+latitude)
+            const status = await postProofEvent("s3423kjnkfnas0au","dsadafasf",latitude, longitude)
+            console.log(status)
+        };
+        sendProofEvents(latitude, longitude);
+    }, [latitude, longitude]);
+
+    useEffect(() => {
+        if (!permissionGranted) { return; }
+        const start = async () => {
+            Geolocation.getCurrentPosition(
+                async (position) => {
+                    setLatitude(position.coords.latitude);
+                    setlongitude(position.coords.longitude);
+                    setLocation("Moitoring Location: Active")
+                    console.log('Value Lat', position.coords.latitude)
+                },
+                (error) => {
+                    // See error code charts below.
+                    setLocation("Moitoring Location: Error, "+error.message)
+                    console.log(error.code, error.message);
+                },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+            );
+        }
+        setInterval(start, 1000);
+    }, [permissionGranted])
 
     useEffect( () => {
-        const start = async () => {
-            const isGranted = await requestLocationPermission();
-            if (isGranted) {
-                Geolocation.getCurrentPosition(
-                    (position) => {
-                        console.log(position);
-                        let latitude = position.coords.latitude;
-                        console.log(latitude)
-                        let longitude = position.coords.longitude;
-                        console.log(longitude)
-                        setLocation("Moitoring Location: Active")
-                        // setLocation("(" +latitude+","+longitude+")")
-                    },
-                    (error) => {
-                        // See error code charts below.
-                        setLocation("Moitoring Location: Error, "+error.message)
-                        console.log(error.code, error.message);
-                    },
-                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-                );
-            }
+        const isPermissionGranted = async () => {
+            setPermissionGranted(await requestLocationPermission());
         }
-        start()
-
-
+        isPermissionGranted();
     }, []);
 
 
@@ -66,10 +79,10 @@ async function requestLocationPermission() {
             },
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log('You can use the camera');
+            console.log('You can use the GPS');
             return true
         } else {
-            console.log('Camera permission denied');
+            console.log('Location permission denied');
             return false
         }
     } catch (err) {
