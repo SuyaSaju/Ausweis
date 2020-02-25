@@ -15,7 +15,7 @@ import {
 
 export const LocationUpdatesScreen = () => {
     const [location, setLocation] = useState(
-        'Getting location!'
+        'Moitoring Location: Not activated'
     );
 
     useEffect( () => {
@@ -29,10 +29,12 @@ export const LocationUpdatesScreen = () => {
                         console.log(latitude)
                         let longitude = position.coords.longitude;
                         console.log(longitude)
-                        setLocation("(" +latitude+","+longitude+")")
+                        setLocation("Moitoring Location: Active")
+                        // setLocation("(" +latitude+","+longitude+")")
                     },
                     (error) => {
                         // See error code charts below.
+                        setLocation("Moitoring Location: Error, "+error.message)
                         console.log(error.code, error.message);
                     },
                     { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
@@ -45,7 +47,9 @@ export const LocationUpdatesScreen = () => {
     }, []);
 
 
-    return <Text>{location}</Text>
+    return <>
+        <Text>{location}</Text>
+    </>
 }
 
 async function requestLocationPermission() {
