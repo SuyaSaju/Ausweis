@@ -1,4 +1,4 @@
-import {BASE_URL} from './api/BaseUrl';
+import {BASE_URL} from './api/Configuration';
 
 export const postProofEvent = async ({
   sessionId,

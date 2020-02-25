@@ -6,6 +6,7 @@ import {getUniqueId} from 'react-native-device-info';
 
 import {Text} from 'react-native';
 import {postProofEvent} from './postProofEvent';
+import {LOCATION_UPDATE_INTERVAL} from './api/Configuration';
 
 export const LocationUpdatesScreen = ({sessionId}) => {
   const [location, setLocation] = useState(
@@ -49,8 +50,7 @@ export const LocationUpdatesScreen = ({sessionId}) => {
         {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
       );
     };
-    const locationUpdateInterval = 5000; //ReadMe
-    const interval = setInterval(start, locationUpdateInterval);
+    const interval = setInterval(start, LOCATION_UPDATE_INTERVAL);
 
     return () => {
       clearInterval(interval);
