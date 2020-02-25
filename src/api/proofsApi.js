@@ -1,8 +1,8 @@
-import {BASE_URL} from './api/Configuration';
+import {BASE_URL} from './Configuration';
 
 export const getSessionStatus = async sessionId => {
   try {
-    const response = await fetch(BASE_URL + 'sessions/${sessionId}');
+    const response = await fetch(BASE_URL + `sessions/${sessionId}`);
     const responseJson = await response.json();
     return responseJson.status;
   } catch (error) {
@@ -12,7 +12,7 @@ export const getSessionStatus = async sessionId => {
 
 export const patchSessions = async (sessionId, status) => {
   try {
-    const response = await fetch(BASE_URL + '/sessions/${sessionId}', {
+    const response = await fetch(BASE_URL + `/sessions/${sessionId}`, {
       method: 'PATCH',
       body: JSON.stringify({status: status}),
     });

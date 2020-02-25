@@ -1,4 +1,4 @@
-import {BASE_URL} from './api/Configuration';
+import {BASE_URL} from './Configuration';
 
 export const postProofEvent = async ({
   sessionId,
@@ -19,7 +19,6 @@ export const postProofEvent = async ({
         geolocation: {longitude: longitude, latitude: latitude},
       },
     });
-    //console.log(response)
     return response.status;
   } catch (error) {
     console.error(error);

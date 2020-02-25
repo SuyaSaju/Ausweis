@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {Button, SafeAreaView, StyleSheet, Text} from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera as Camera} from 'react-native-camera';
-import {getSessionStatus, patchSessions} from './proofsApi';
+import {getSessionStatus, patchSessions} from './api/proofsApi';
 import {LocationUpdatesScreen} from './LocationUpdatesScreen';
 
 const Dashboard = () => {

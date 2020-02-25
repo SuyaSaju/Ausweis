@@ -5,30 +5,40 @@ import {PermissionsAndroid} from 'react-native';
 import {getUniqueId} from 'react-native-device-info';
 
 import {Text} from 'react-native';
-import {postProofEvent} from './postProofEvent';
+import {postProofEvent} from './api/postProofEvent';
 import {LOCATION_UPDATE_INTERVAL} from './api/Configuration';
 
 export const LocationUpdatesScreen = ({sessionId}) => {
   const [location, setLocation] = useState(
     'Monitoring Location: Getting location!',
   );
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setlongitude] = useState('');
+  const [locationCoords, setLocationCoords] = useState({
+    latitude: '',
+    longitude: '',
+  });
   const [permissionGranted, setPermissionGranted] = useState(false);
 
   useEffect(() => {
     const sendProofEvents = async () => {
-      console.log('Sending Lat: ' + latitude);
+      console.log(
+        'Sending Latitude: ' +
+          locationCoords.latitude +
+          ' Longitude: ' +
+          locationCoords.longitude,
+      );
       const status = await postProofEvent(
         sessionId,
         getUniqueId(),
-        latitude,
-        longitude,
+        locationCoords.latitude,
+        locationCoords.longitude,
       );
       console.log(status);
     };
-    sendProofEvents(latitude, longitude);
-  }, [latitude, longitude, sessionId]);
+    if (locationCoords.latitude === '' || locationCoords.longitude === '') {
+      return;
+    }
+    sendProofEvents();
+  }, [locationCoords, sessionId]);
 
   useEffect(() => {
     if (!permissionGranted) {
@@ -37,10 +47,11 @@ export const LocationUpdatesScreen = ({sessionId}) => {
     const start = async () => {
       Geolocation.getCurrentPosition(
         async position => {
-          setLatitude(position.coords.latitude);
-          setlongitude(position.coords.longitude);
+          setLocationCoords({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
           setLocation('Monitoring Location: Active');
-          console.log('Value Lat', position.coords.latitude);
         },
         error => {
           // See error code charts below.
@@ -68,9 +79,7 @@ export const LocationUpdatesScreen = ({sessionId}) => {
     isPermissionGranted();
   }, []);
 
-  return (
-    <Text>{location}</Text>
-  );
+  return <Text>{location}</Text>;
 };
 
 async function requestLocationPermission() {
