@@ -4,6 +4,7 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera as Camera} from 'react-native-camera';
 import {getSessionStatus, patchSessions} from './api/proofsApi';
 import {LocationUpdatesScreen} from './LocationUpdatesScreen';
+import {STATUS_CHECK_INTERVAL} from './api/Configuration';
 
 const Dashboard = () => {
   const [pairingStarted, setPairingStarted] = useState(false);
@@ -13,6 +14,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const sessionStatus = async () => {
+      console.log('Checking status...');
       const pairingStatusFromResponse = await getSessionStatus(sessionId);
       if (pairingStatusFromResponse.includes('Active')) {
         setDisplayMessage(
@@ -21,8 +23,13 @@ const Dashboard = () => {
       }
       setPairingStatus(pairingStatusFromResponse);
     };
-    if (sessionId === '') return;
-    sessionStatus();
+    if (sessionId === '') {
+      return;
+    }
+    const interval = setInterval(sessionStatus, STATUS_CHECK_INTERVAL);
+    return () => {
+      clearInterval(interval);
+    };
   }, [sessionId]);
 
   useEffect(() => {
@@ -34,12 +41,9 @@ const Dashboard = () => {
       }
       if (
         pairingStatus.length !== 0 &&
-        !(
-          pairingStatus.includes('Pairing') ||
-          pairingStatus.includes('Active') ||
-          pairingStatus.includes('Closed')
-        )
+        (pairingStatus.includes('Error') || pairingStatus.includes('Timed-Out'))
       ) {
+        setSessionId('');
         setDisplayMessage(
           'Session pairing expired or invalid. To re-initiate pairing, logout\n' +
             '            and login once again to Topcoder through VSCode',
@@ -84,7 +88,7 @@ const Dashboard = () => {
         />
       )}
       {displayMessage !== '' && <Text>{displayMessage}</Text>}
-      {pairingStatus.length !== 0 && !pairingStatus.includes('Closed') && (
+      {pairingStatus.length !== 0 && pairingStatus.includes('Active') && (
         <Button title={'Detach pairing'} onPress={detachPairing} />
       )}
       <Button title={'Log out'} onPress={() => {}} />

@@ -6,7 +6,7 @@ export const getSessionStatus = async sessionId => {
     const responseJson = await response.json();
     return responseJson.status;
   } catch (error) {
-    console.error(error);
+    return ['Error'];
   }
 };
 

@@ -21,6 +21,6 @@ export const postProofEvent = async ({
     });
     return response.status;
   } catch (error) {
-    console.error(error);
+    console.log('Update GeoLocation failed');
   }
 };
