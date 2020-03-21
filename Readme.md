@@ -2,6 +2,8 @@
 
 This project has been bootstrapped using the react native cli as specified in the requirements. To run the app locally, do the following:
 
+Drive Download Link: https://drive.google.com/drive/folders/1xqNwiqYt3ZrIxy7jhvvZtwSG2DUa1ECx?usp=sharing
+
 ## Deployment
 
 #### Prerequisites for running the react-native app
